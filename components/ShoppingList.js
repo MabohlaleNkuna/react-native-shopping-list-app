@@ -1,17 +1,16 @@
-//components/ShoppingList.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, FlatList } from 'react-native';
+// components/ShoppingList.js
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem, editItem, deleteItem, togglePurchased, setItems } from '../redux/shoppingListSlice';
+import { deleteItem, togglePurchased, setItems } from '../redux/shoppingListSlice';
 import { loadShoppingList, saveShoppingList } from '../utils/storage';
+import AddItem from './AddItem';
 
 const ShoppingList = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.shoppingList.items);
-  
-  const [itemName, setItemName] = useState('');
-  const [itemQuantity, setItemQuantity] = useState('');
-  const [editingItemId, setEditingItemId] = useState(null);
+  const [isAddingItem, setIsAddingItem] = useState(false);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -21,35 +20,9 @@ const ShoppingList = () => {
     fetchItems();
   }, [dispatch]);
 
-  const handleAddItem = () => {
-    if (itemName && itemQuantity) {
-      const newItem = {
-        id: Date.now().toString(),
-        name: itemName,
-        quantity: itemQuantity,
-        purchased: false,
-      };
-      dispatch(addItem(newItem));
-      saveShoppingList([...items, newItem]);
-      setItemName('');
-      setItemQuantity('');
-    }
-  };
-
-  const handleEditItem = (id, name, quantity) => {
-    setEditingItemId(id);
-    setItemName(name);
-    setItemQuantity(quantity);
-  };
-
-  const handleSaveEdit = () => {
-    if (itemName && itemQuantity && editingItemId) {
-      dispatch(editItem({ id: editingItemId, name: itemName, quantity: itemQuantity }));
-      saveShoppingList(items);
-      setItemName('');
-      setItemQuantity('');
-      setEditingItemId(null);
-    }
+  const handleTogglePurchased = (id) => {
+    dispatch(togglePurchased(id));
+    saveShoppingList(items);
   };
 
   const handleDeleteItem = (id) => {
@@ -57,39 +30,30 @@ const ShoppingList = () => {
     saveShoppingList(items.filter(item => item.id !== id));
   };
 
-  const handleTogglePurchased = (id) => {
-    dispatch(togglePurchased(id));
-    saveShoppingList(items);
-  };
-
   return (
     <View>
-      <TextInput
-        value={itemName}
-        onChangeText={setItemName}
-        placeholder="Item Name"
-      />
-      <TextInput
-        value={itemQuantity}
-        onChangeText={setItemQuantity}
-        placeholder="Quantity"
-        keyboardType="numeric"
-      />
-      {editingItemId ? (
-        <Button title="Save" onPress={handleSaveEdit} />
+      {isAddingItem ? (
+        <AddItem closeModal={() => setIsAddingItem(false)} />
       ) : (
-        <Button title="Add Item" onPress={handleAddItem} />
+        <Button title="Add Item" onPress={() => setIsAddingItem(true)} />
       )}
 
       <FlatList
         data={items}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            <Text>{item.name} ({item.quantity})</Text>
-            <Button title={item.purchased ? 'Mark as Unpurchased' : 'Mark as Purchased'} onPress={() => handleTogglePurchased(item.id)} />
-            <Button title="Edit" onPress={() => handleEditItem(item.id, item.name, item.quantity)} />
-            <Button title="Delete" onPress={() => handleDeleteItem(item.id)} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ textDecorationLine: item.purchased ? 'line-through' : 'none' }}>
+              {item.name} ({item.quantity})
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={() => handleTogglePurchased(item.id)}>
+                <Text style={{ color: item.purchased ? 'green' : 'red' }}>
+                  {item.purchased ? '✔' : '❌'}
+                </Text>
+              </TouchableOpacity>
+              <Button title="Delete" onPress={() => handleDeleteItem(item.id)} />
+            </View>
           </View>
         )}
       />

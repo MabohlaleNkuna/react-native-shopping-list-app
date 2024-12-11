@@ -1,3 +1,5 @@
+// redux/shoppingListSlice.js
+
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -11,8 +13,6 @@ const shoppingListSlice = createSlice({
   reducers: {
     addItem: (state, action) => {
       const { name, quantity } = action.payload;
-      
-      
       if (!name || name.trim() === '') {
         state.error = 'Item name cannot be empty!';
         return;
@@ -21,7 +21,6 @@ const shoppingListSlice = createSlice({
         state.error = 'Quantity must be a valid number greater than 0!';
         return;
       }
-      
       state.items.push({
         id: Date.now(),
         name,
@@ -30,31 +29,8 @@ const shoppingListSlice = createSlice({
       });
       state.error = null;
     },
-    editItem: (state, action) => {
-      const { id, name, quantity } = action.payload;
-      
-      // Input validation
-      if (!name || name.trim() === '') {
-        state.error = 'Item name cannot be empty!';
-        return;
-      }
-      if (isNaN(quantity) || quantity <= 0) {
-        state.error = 'Quantity must be a valid number greater than 0!';
-        return;
-      }
-      
-      const itemIndex = state.items.findIndex(item => item.id === id);
-      if (itemIndex !== -1) {
-        state.items[itemIndex] = {
-          ...state.items[itemIndex],
-          name,
-          quantity: parseInt(quantity),
-        };
-        state.error = null;
-      }
-    },
-    deleteItem: (state, action) => {
-      state.items = state.items.filter(item => item.id !== action.payload);
+    setItems: (state, action) => {
+      state.items = action.payload;
     },
     togglePurchased: (state, action) => {
       const item = state.items.find(item => item.id === action.payload);
@@ -62,9 +38,12 @@ const shoppingListSlice = createSlice({
         item.purchased = !item.purchased;
       }
     },
+    deleteItem: (state, action) => {
+      state.items = state.items.filter(item => item.id !== action.payload);
+    },
   },
 });
 
-export const { addItem, editItem, deleteItem, togglePurchased } = shoppingListSlice.actions;
+export const { addItem, setItems, togglePurchased, deleteItem } = shoppingListSlice.actions;
 
 export default shoppingListSlice.reducer;

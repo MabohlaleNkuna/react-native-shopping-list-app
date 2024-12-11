@@ -1,4 +1,5 @@
-//screens/HomeScreen.js
+// screens/HomeScreen.js
+
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ShoppingList from '../components/ShoppingList';
