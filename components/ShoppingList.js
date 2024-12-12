@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteItem, togglePurchased, setItems, updateItem } from '../redux/shoppingListSlice';
 import { loadShoppingList, saveShoppingList } from '../utils/storage';
@@ -10,7 +10,7 @@ const ShoppingList = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.shoppingList.items);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [editingItem, setEditingItem] = useState(null); // Track the item being edited
+  const [editingItem, setEditingItem] = useState(null);
   const [editedName, setEditedName] = useState('');
   const [editedQuantity, setEditedQuantity] = useState('');
 
@@ -33,31 +33,29 @@ const ShoppingList = () => {
   };
 
   const handleEditItem = (item) => {
-    setEditingItem(item.id); // Set the item being edited
-    setEditedName(item.name); // Pre-fill name
-    setEditedQuantity(item.quantity.toString()); // Pre-fill quantity
+    setEditingItem(item.id);
+    setEditedName(item.name);
+    setEditedQuantity(item.quantity.toString());
   };
 
   const handleSaveEdit = (id) => {
     dispatch(updateItem({ id, name: editedName, quantity: parseInt(editedQuantity) }));
-    saveShoppingList(items.map((item) =>
-      item.id === id ? { ...item, name: editedName, quantity: parseInt(editedQuantity) } : item
-    ));
-    setEditingItem(null); // Exit edit mode
+    saveShoppingList(
+      items.map((item) =>
+        item.id === id ? { ...item, name: editedName, quantity: parseInt(editedQuantity) } : item
+      )
+    );
+    setEditingItem(null);
     setEditedName('');
     setEditedQuantity('');
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {isAddingItem ? (
         <AddItem closeModal={() => setIsAddingItem(false)} />
-      ) : (
-        <TouchableOpacity onPress={() => setIsAddingItem(true)} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Item</Text>
-        </TouchableOpacity>
-      )}
-  
+      ) : null}
+
       <FlatList
         data={items}
         keyExtractor={(item) => item.id.toString()}
@@ -96,26 +94,42 @@ const ShoppingList = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleEditItem(item)}>
-                <Icon name="edit" size={24} color="orange" style={styles.icon} />
+                <Icon name="edit" size={24} color="orange" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeleteItem(item.id)}>
-                <Icon name="delete" size={24} color="red" style={styles.icon} />
+                <Icon name="delete" size={24} color="red" />
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
+
+      <TouchableOpacity
+        onPress={() => setIsAddingItem(true)}
+        style={styles.addButton}>
+        <Text style={styles.addButtonText}>Add Item</Text>
+      </TouchableOpacity>
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
   },
   editContainer: {
     flex: 1,
@@ -129,32 +143,34 @@ const styles = StyleSheet.create({
   },
   itemText: {
     flex: 1,
+    fontSize: 16,
+    color: '#333',
   },
   purchased: {
     textDecorationLine: 'line-through',
+    color: '#888',
   },
   iconContainer: {
     flexDirection: 'row',
-  },
-  icon: {
-    marginHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   addButton: {
-    backgroundColor: '#4CAF50', 
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
-    alignSelf: 'center',
-    marginVertical: 10,
-    elevation: 2, 
+    elevation: 2,
   },
   addButtonText: {
-    color: '#FFFFFF', 
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 });
-
 
 export default ShoppingList;
