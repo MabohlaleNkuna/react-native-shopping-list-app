@@ -41,9 +41,17 @@ const shoppingListSlice = createSlice({
     deleteItem: (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
+    updateItem: (state, action) => {
+      const { id, name, quantity } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      if (item) {
+        item.name = name;
+        item.quantity = quantity;
+      }
+    },
   },
 });
 
-export const { addItem, setItems, togglePurchased, deleteItem } = shoppingListSlice.actions;
+export const { addItem, setItems, togglePurchased, deleteItem, updateItem } = shoppingListSlice.actions;
 
 export default shoppingListSlice.reducer;
