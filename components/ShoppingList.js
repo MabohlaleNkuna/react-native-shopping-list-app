@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, FlatList, TextInput, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteItem, togglePurchased, setItems, updateItem } from '../redux/shoppingListSlice';
 import { loadShoppingList, saveShoppingList } from '../utils/storage';
 import AddItem from './AddItem';
+import CustomButton from './CustomButton';
 
 const ShoppingList = () => {
   const dispatch = useDispatch();
@@ -52,9 +52,7 @@ const ShoppingList = () => {
 
   return (
     <View style={styles.container}>
-      {isAddingItem ? (
-        <AddItem closeModal={() => setIsAddingItem(false)} />
-      ) : null}
+      {isAddingItem && <AddItem closeModal={() => setIsAddingItem(false)} />}
 
       <FlatList
         data={items}
@@ -76,9 +74,7 @@ const ShoppingList = () => {
                   placeholder="Edit Quantity"
                   keyboardType="numeric"
                 />
-                <TouchableOpacity onPress={() => handleSaveEdit(item.id)}>
-                  <Icon name="save" size={24} color="blue" />
-                </TouchableOpacity>
+                <CustomButton title="Save" icon="save" onPress={() => handleSaveEdit(item.id)} />
               </View>
             ) : (
               <Text style={[styles.itemText, item.purchased && styles.purchased]}>
@@ -86,29 +82,15 @@ const ShoppingList = () => {
               </Text>
             )}
             <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => handleTogglePurchased(item.id)}>
-                <Icon
-                  name={item.purchased ? 'check-circle' : 'radio-button-unchecked'}
-                  size={24}
-                  color={item.purchased ? 'green' : 'red'}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleEditItem(item)}>
-                <Icon name="edit" size={24} color="orange" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteItem(item.id)}>
-                <Icon name="delete" size={24} color="red" />
-              </TouchableOpacity>
+              <CustomButton icon={item.purchased ? 'check-circle' : 'radio-button-unchecked'} color="transparent" iconColor={item.purchased ? 'green' : 'red'} onPress={() => handleTogglePurchased(item.id)} />
+              <CustomButton icon="edit" color="transparent" iconColor="orange" onPress={() => handleEditItem(item)} />
+              <CustomButton icon="delete" color="transparent" iconColor="red" onPress={() => handleDeleteItem(item.id)} />
             </View>
           </View>
         )}
       />
 
-      <TouchableOpacity
-        onPress={() => setIsAddingItem(true)}
-        style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add Item</Text>
-      </TouchableOpacity>
+      <CustomButton title="Add Item" icon="add" onPress={() => setIsAddingItem(true)} />
     </View>
   );
 };
@@ -132,7 +114,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   editContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -152,24 +133,6 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  addButton: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

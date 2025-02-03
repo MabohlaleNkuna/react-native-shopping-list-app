@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Alert, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../redux/shoppingListSlice';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import CustomButton from './CustomButton'; // Import the reusable button component
 
 const AddItem = ({ closeModal }) => {
   const dispatch = useDispatch();
@@ -35,12 +35,13 @@ const AddItem = ({ closeModal }) => {
         keyboardType="numeric"
         placeholderTextColor="#777"
       />
-      <Icon
-        name="add-circle"
-        size={40}
+      <CustomButton 
+        title="Add Item" 
+        onPress={handleAddItem} 
+        icon="add-circle" 
         color="green"
-        onPress={handleAddItem}
-        style={styles.addButton}
+        textColor="#fff"
+        iconColor="#fff"
       />
     </View>
   );
@@ -64,9 +65,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  addButton: {
-    marginTop: 15,
   },
 });
 
