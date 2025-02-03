@@ -14,6 +14,7 @@ const ShoppingList = () => {
   const [editedName, setEditedName] = useState('');
   const [editedQuantity, setEditedQuantity] = useState('');
 
+  // Load items once on initial load
   useEffect(() => {
     const fetchItems = async () => {
       const storedItems = await loadShoppingList();
@@ -22,14 +23,17 @@ const ShoppingList = () => {
     fetchItems();
   }, [dispatch]);
 
+  // Save items to AsyncStorage whenever items are updated
+  useEffect(() => {
+    saveShoppingList(items);
+  }, [items]);
+
   const handleTogglePurchased = (id) => {
     dispatch(togglePurchased(id));
-    saveShoppingList(items);
   };
 
   const handleDeleteItem = (id) => {
     dispatch(deleteItem(id));
-    saveShoppingList(items.filter((item) => item.id !== id));
   };
 
   const handleEditItem = (item) => {
@@ -40,11 +44,6 @@ const ShoppingList = () => {
 
   const handleSaveEdit = (id) => {
     dispatch(updateItem({ id, name: editedName, quantity: parseInt(editedQuantity) }));
-    saveShoppingList(
-      items.map((item) =>
-        item.id === id ? { ...item, name: editedName, quantity: parseInt(editedQuantity) } : item
-      )
-    );
     setEditingItem(null);
     setEditedName('');
     setEditedQuantity('');
