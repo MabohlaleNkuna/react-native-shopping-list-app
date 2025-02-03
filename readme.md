@@ -34,7 +34,14 @@ Ensure you have the following installed:
 - **React Native** (framework for building mobile apps)
 - **Redux Toolkit** (for state management)
 
+
 To install the necessary dependencies, run:
 
 bash
 npm install
+
+## APK for Android
+
+You can download the APK for the app from the following link:
+
+[Download APK](https://expo.dev/artifacts/eas/bR6EBSVNjP4HYRb6YuK3AP.apk)
