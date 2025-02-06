@@ -10,11 +10,22 @@ const AddItem = ({ closeModal }) => {
   const [itemQuantity, setItemQuantity] = useState('');
 
   const handleAddItem = () => {
-    if (!itemName || !itemQuantity) {
-      Alert.alert("Please enter item name and quantity");
+    if (!itemName.trim() || !itemQuantity.trim()) {
+      Alert.alert("Error", "Please enter both item name and quantity.");
       return;
     }
-    dispatch(addItem({ name: itemName, quantity: itemQuantity }));
+    
+    if (!isNaN(itemName)) {
+      Alert.alert("Error", "Item name cannot be a number.");
+      return;
+    }
+
+    if (!/^\d+$/.test(itemQuantity)) {
+      Alert.alert("Error", "Quantity must be a number.");
+      return;
+    }
+
+    dispatch(addItem({ name: itemName.trim(), quantity: itemQuantity.trim() }));
     closeModal();
   };
 
